@@ -79,6 +79,11 @@ h1 {
   font-weight: 800;
 }
 
+.reader-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .controls {
   position: sticky;
   top: 0;
@@ -233,10 +238,20 @@ select option {
   min-height: 0;
   overflow: auto;
   padding: 14px;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.page-frame {
+  display: grid;
+  place-items: center;
+  max-width: min(100%, var(--page-width, 1500px));
+  max-height: 100%;
+  will-change: opacity, transform;
 }
 
 #pageImage {
-  max-width: min(100%, var(--page-width, 1500px));
+  max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
@@ -251,10 +266,60 @@ select option {
   box-shadow: 0 20px 70px rgba(0, 0, 0, 0.65);
 }
 
-.reader-stage.fill #pageImage {
+.reader-stage.fill .page-frame {
   max-width: none;
   max-height: none;
   width: var(--page-width, 1500px);
+}
+
+.reader-stage.fill #pageImage {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+}
+
+.turn-out-left {
+  animation: turnOutLeft 150ms ease-in forwards;
+}
+
+.turn-out-right {
+  animation: turnOutRight 150ms ease-in forwards;
+}
+
+.turn-in-left {
+  animation: turnInLeft 180ms ease-out both;
+}
+
+.turn-in-right {
+  animation: turnInRight 180ms ease-out both;
+}
+
+@keyframes turnOutLeft {
+  to {
+    opacity: 0;
+    transform: translateX(-44px) rotateY(-10deg) scale(0.985);
+  }
+}
+
+@keyframes turnOutRight {
+  to {
+    opacity: 0;
+    transform: translateX(44px) rotateY(10deg) scale(0.985);
+  }
+}
+
+@keyframes turnInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-44px) rotateY(-10deg) scale(0.985);
+  }
+}
+
+@keyframes turnInRight {
+  from {
+    opacity: 0;
+    transform: translateX(44px) rotateY(10deg) scale(0.985);
+  }
 }
 
 .page-button {
@@ -300,6 +365,21 @@ select option {
   color: #14120d;
 }
 
+.reader:fullscreen,
+.reader.reader-immersive {
+  background: #000;
+}
+
+.reader:fullscreen .reader-bar,
+.reader.reader-immersive .reader-bar {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.18));
+}
+
+.reader:fullscreen .reader-tools,
+.reader.reader-immersive .reader-tools {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.18));
+}
+
 @media (max-width: 820px) {
   .controls {
     grid-template-columns: 1fr;
@@ -329,7 +409,7 @@ select option {
   }
 
   .reader-bar {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   #archiveItem {
