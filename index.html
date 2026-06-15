@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101820">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Pulp Shelf">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Pulp Magazine Shelf</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Internet Archive</p>
+          <h1>Pulp Magazine Shelf</h1>
+        </div>
+        <a class="archive-link" href="https://archive.org/details/pulpmagazinearchive" target="_blank" rel="noreferrer">Archive</a>
+      </header>
+
+      <section class="controls" aria-label="Bookshelf controls">
+        <label class="search">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Galaxy, Weird Tales, Amazing Stories...">
+        </label>
+        <label>
+          <span>Sort</span>
+          <select id="sortSelect">
+            <option value="downloads desc">Most read</option>
+            <option value="date desc">Newest date</option>
+            <option value="date asc">Oldest date</option>
+            <option value="titleSorter asc">Title A-Z</option>
+          </select>
+        </label>
+      </section>
+
+      <section id="status" class="status" role="status">Loading the shelf...</section>
+      <section id="shelf" class="shelf" aria-label="Pulp magazine bookshelf"></section>
+      <button id="loadMore" class="load-more" type="button" hidden>Load more</button>
+    </main>
+
+    <section id="reader" class="reader" aria-label="Comic reader" hidden>
+      <div class="reader-bar">
+        <button id="closeReader" class="icon-button" type="button" aria-label="Close reader">Close</button>
+        <div class="reader-title">
+          <strong id="readerTitle">Untitled</strong>
+          <span id="readerMeta">Page 1</span>
+        </div>
+        <a id="archiveItem" class="icon-button" href="#" target="_blank" rel="noreferrer">IA</a>
+      </div>
+
+      <div class="reader-stage">
+        <button id="prevPage" class="page-button left" type="button" aria-label="Previous page">‹</button>
+        <img id="pageImage" alt="">
+        <button id="nextPage" class="page-button right" type="button" aria-label="Next page">›</button>
+      </div>
+
+      <div class="reader-tools" aria-label="Reading controls">
+        <label>
+          <span>Page</span>
+          <input id="pageSlider" type="range" min="1" max="1" value="1">
+        </label>
+        <label>
+          <span>Width</span>
+          <input id="widthSlider" type="range" min="900" max="2200" step="100" value="1500">
+        </label>
+        <label>
+          <span>Contrast</span>
+          <input id="contrastSlider" type="range" min="90" max="185" value="128">
+        </label>
+        <label>
+          <span>Brightness</span>
+          <input id="brightnessSlider" type="range" min="85" max="145" value="108">
+        </label>
+        <label>
+          <span>Color</span>
+          <input id="saturationSlider" type="range" min="0" max="140" value="82">
+        </label>
+        <div class="toggles">
+          <button id="fitToggle" type="button" aria-pressed="true">Fit</button>
+          <button id="sepiaToggle" type="button" aria-pressed="false">Warm</button>
+          <button id="invertToggle" type="button" aria-pressed="false">Invert</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
