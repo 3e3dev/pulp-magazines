@@ -49,12 +49,17 @@
           <strong id="readerTitle">Untitled</strong>
           <span id="readerMeta">Page 1</span>
         </div>
-        <a id="archiveItem" class="icon-button" href="#" target="_blank" rel="noreferrer">IA</a>
+        <div class="reader-actions">
+          <button id="fullscreenToggle" class="icon-button" type="button" aria-pressed="false">Full</button>
+          <a id="archiveItem" class="icon-button" href="#" target="_blank" rel="noreferrer">IA</a>
+        </div>
       </div>
 
       <div class="reader-stage">
         <button id="prevPage" class="page-button left" type="button" aria-label="Previous page">‹</button>
-        <img id="pageImage" alt="">
+        <div id="pageFrame" class="page-frame">
+          <img id="pageImage" alt="">
+        </div>
         <button id="nextPage" class="page-button right" type="button" aria-label="Next page">›</button>
       </div>
 
