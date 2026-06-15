@@ -370,14 +370,32 @@ select option {
   background: #000;
 }
 
+.reader.reader-immersive {
+  grid-template-rows: minmax(0, 1fr);
+}
+
 .reader:fullscreen .reader-bar,
 .reader.reader-immersive .reader-bar {
+  position: absolute;
+  top: env(safe-area-inset-top);
+  left: env(safe-area-inset-left);
+  right: env(safe-area-inset-right);
+  z-index: 24;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.18));
 }
 
 .reader:fullscreen .reader-tools,
 .reader.reader-immersive .reader-tools {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.18));
+  display: none;
+}
+
+.reader.reader-immersive .reader-stage {
+  grid-row: 1;
+  padding: 72px 14px 14px;
+}
+
+.reader.reader-immersive .page-button {
+  background: rgba(0, 0, 0, 0.34);
 }
 
 @media (max-width: 820px) {
