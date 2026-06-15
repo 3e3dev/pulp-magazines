@@ -12,6 +12,9 @@ const state = {
   fit: true,
   sepia: false,
   invert: false,
+  touchStartX: 0,
+  touchStartY: 0,
+  isTurning: false,
 };
 
 const els = {
@@ -24,7 +27,9 @@ const els = {
   closeReader: document.querySelector("#closeReader"),
   readerTitle: document.querySelector("#readerTitle"),
   readerMeta: document.querySelector("#readerMeta"),
+  fullscreenToggle: document.querySelector("#fullscreenToggle"),
   archiveItem: document.querySelector("#archiveItem"),
+  pageFrame: document.querySelector("#pageFrame"),
   pageImage: document.querySelector("#pageImage"),
   readerStage: document.querySelector(".reader-stage"),
   prevPage: document.querySelector("#prevPage"),
@@ -194,6 +199,30 @@ function showPage(page) {
   preloadPage(state.activePage + 1);
 }
 
+function turnPage(delta) {
+  if (!state.active || state.isTurning) return;
+  const targetPage = state.activePage + delta;
+  if (targetPage < 1 || targetPage > state.leafCount) return;
+
+  state.isTurning = true;
+  const outClass = delta > 0 ? "turn-out-left" : "turn-out-right";
+  const inClass = delta > 0 ? "turn-in-right" : "turn-in-left";
+  els.pageFrame.classList.remove("turn-out-left", "turn-out-right", "turn-in-left", "turn-in-right");
+  els.pageFrame.classList.add(outClass);
+
+  window.setTimeout(() => {
+    showPage(targetPage);
+    els.readerStage.scrollTo({ left: 0, top: 0, behavior: "instant" });
+    els.pageFrame.classList.remove(outClass);
+    els.pageFrame.classList.add(inClass);
+
+    window.setTimeout(() => {
+      els.pageFrame.classList.remove(inClass);
+      state.isTurning = false;
+    }, 180);
+  }, 150);
+}
+
 function preloadPage(page) {
   if (!state.active || page > state.leafCount) return;
   const image = new Image();
@@ -219,6 +248,39 @@ function closeReader() {
   document.body.style.overflow = "";
   state.active = null;
   els.pageImage.removeAttribute("src");
+  exitFullscreen();
+}
+
+function isFullscreen() {
+  return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+async function enterFullscreen() {
+  const target = els.reader;
+  if (target.requestFullscreen) {
+    await target.requestFullscreen();
+  } else if (target.webkitRequestFullscreen) {
+    target.webkitRequestFullscreen();
+  } else {
+    els.reader.classList.add("reader-immersive");
+  }
+  updateFullscreenButton();
+}
+
+async function exitFullscreen() {
+  if (document.exitFullscreen && document.fullscreenElement) {
+    await document.exitFullscreen();
+  } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+    document.webkitExitFullscreen();
+  }
+  els.reader.classList.remove("reader-immersive");
+  updateFullscreenButton();
+}
+
+function updateFullscreenButton() {
+  const enabled = isFullscreen() || els.reader.classList.contains("reader-immersive");
+  els.fullscreenToggle.setAttribute("aria-pressed", String(enabled));
+  els.fullscreenToggle.textContent = enabled ? "Exit" : "Full";
 }
 
 let searchTimer;
@@ -241,9 +303,17 @@ els.loadMore.addEventListener("click", () => {
 });
 
 els.closeReader.addEventListener("click", closeReader);
-els.prevPage.addEventListener("click", () => showPage(state.activePage - 1));
-els.nextPage.addEventListener("click", () => showPage(state.activePage + 1));
+els.prevPage.addEventListener("click", () => turnPage(-1));
+els.nextPage.addEventListener("click", () => turnPage(1));
 els.pageSlider.addEventListener("input", () => showPage(Number(els.pageSlider.value)));
+
+els.fullscreenToggle.addEventListener("click", () => {
+  if (isFullscreen() || els.reader.classList.contains("reader-immersive")) {
+    exitFullscreen();
+  } else {
+    enterFullscreen();
+  }
+});
 
 [els.widthSlider, els.contrastSlider, els.brightnessSlider, els.saturationSlider].forEach((slider) => {
   slider.addEventListener("input", updateFilter);
@@ -271,8 +341,29 @@ els.invertToggle.addEventListener("click", () => {
 window.addEventListener("keydown", (event) => {
   if (els.reader.hidden) return;
   if (event.key === "Escape") closeReader();
-  if (event.key === "ArrowLeft") showPage(state.activePage - 1);
-  if (event.key === "ArrowRight") showPage(state.activePage + 1);
+  if (event.key === "ArrowLeft") turnPage(-1);
+  if (event.key === "ArrowRight") turnPage(1);
 });
+
+els.readerStage.addEventListener("touchstart", (event) => {
+  if (event.touches.length !== 1) return;
+  state.touchStartX = event.touches[0].clientX;
+  state.touchStartY = event.touches[0].clientY;
+}, { passive: true });
+
+els.readerStage.addEventListener("touchend", (event) => {
+  if (!state.touchStartX || !event.changedTouches.length) return;
+  const touch = event.changedTouches[0];
+  const deltaX = touch.clientX - state.touchStartX;
+  const deltaY = touch.clientY - state.touchStartY;
+  state.touchStartX = 0;
+  state.touchStartY = 0;
+
+  if (Math.abs(deltaX) < 52 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return;
+  turnPage(deltaX < 0 ? 1 : -1);
+}, { passive: true });
+
+document.addEventListener("fullscreenchange", updateFullscreenButton);
+document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 
 loadShelf({ reset: true });
