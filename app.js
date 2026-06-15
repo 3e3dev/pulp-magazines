@@ -257,13 +257,18 @@ function isFullscreen() {
 
 async function enterFullscreen() {
   const target = els.reader;
-  if (target.requestFullscreen) {
-    await target.requestFullscreen();
-  } else if (target.webkitRequestFullscreen) {
-    target.webkitRequestFullscreen();
-  } else {
-    els.reader.classList.add("reader-immersive");
+  els.reader.classList.add("reader-immersive");
+
+  try {
+    if (target.requestFullscreen) {
+      await target.requestFullscreen();
+    } else if (target.webkitRequestFullscreen) {
+      target.webkitRequestFullscreen();
+    }
+  } catch (error) {
+    console.info("Native fullscreen unavailable; using immersive reader mode.", error);
   }
+
   updateFullscreenButton();
 }
 
