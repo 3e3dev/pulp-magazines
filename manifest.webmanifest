@@ -1,0 +1,9 @@
+{
+  "name": "Pulp Magazine Shelf",
+  "short_name": "Pulp Shelf",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#101820",
+  "theme_color": "#101820",
+  "description": "A mobile-friendly Internet Archive pulp magazine bookshelf and reader."
+}
